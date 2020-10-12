@@ -1,0 +1,181 @@
+
+Spring:
+
+Two ways: (RESTful WebServices)
+
+1) Spring MVC  (storeappwithoutHAL)
+
+@RestController + @Service + @Repository
+
+- Service to Service call = Feign (REST clients)
+
+2) Spring Data REST  (storeapp) - HATEOS
+
+@RepositoryRestResource
+
+Spring Data REST + Feign (REST clients)
+
+-------------------------------------------------------------
+
+Spring Data REST with a Feign client: (service to service call)
+
+com.fasterxml.jackson.databind.exc.MismatchedInputException: Cannot deserialize instance of `java.util.ArrayList<com.mphasis.domain.Product>` out of START_OBJECT token
+
+-------------------------------------------------------------
+
+Solution:
+
+Hypermedia - spring-boot-starter-hateoas
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-openfeign</artifactId>
+</dependency>
+
+
+------------------------------
+
+@EnableHypermediaSupport(type = EnableHypermediaSupport.HypermediaType.HAL)
+
+------------------------------
+
+spring-boot-starter-hateoas:  (ProductServiceProxy)
+
+0.25.0:
+
+Product to Resource<?>
+List<Product> to Resources<?>
+
+1.0.1:
+
+Product to EntityModel<Product>
+List<Product> to CollectionModel<EntityModel<Product>>
+
+--------------------------------------------------------
+
+storeappwithoutHAL  +   cloudserver-eureka-openfeign
+
+--------------------------------------------------------
+
+storeapp  +   cloudserver-eureka-openfeign-storeapp
+
+--------------------------------------------------------
+
+Netflix Hystrix - is circuit breaker pattern
+
+Spring Cloud Netflix
+
+--------------------------------------------------------
+
+Service-to-Service:
+
+1) RestTemplate (Ribbon - Load Balancer)
+
+2) Feign
+
+--------------------------------------------------------
+
+1) RestTemplate 
+
+spring-cloud-starter-netflix-hytrix
+
+--------------------------------------------------------
+
+Note: 
+@HystrixCommand will only works in a class marked with @Service/@Component
+
+--------------------------------------------------------
+
+@EnableCiruitBreaker
+
+---------------------------------------------------------
+
+2) Feign
+
+spring-cloud-starter-netflix-hytrix
+
+--------------------------------------------------------
+
+In application.properties:
+
+feign.hystrix.enabled=true
+
+--------------------------------------------------------
+
+@FeignClient(name = "product-service", fallback = ProductServiceFallback.class)
+
+--------------------------------------------------------
+
+@EnableCiruitBreaker
+
+--------------------------------------------------------
+
+***** Hystrix Dashboard:
+
+1) spring-boot-start-actuator
++ 
+spring-cloud-starter-netflix-hystrix-dashboard
+
+2) 
+Add @EnableHystrixDashboard
+
+3) 
+http://localhost:9997/hystix
+
+In dashboard:
+http://localhost:9997/actuator/hystrix.stream
+
+4) 
+In application.properties:
+management.endpoints.web.exposure.include=*
+
+--------------------------------------------------------
+
+Zuul:
+
+1) Starter:
+spring-cloud-starter-netflix-zuul
+
+2)
+@EnableZuulProxy
+
+3)
+
+# http://localhost:8080/api/products
+
+#will start the gateway server @8080
+server.port=8080
+
+#http://localhost:51071/products
+
+zuul.routes.products.url=http://localhost:51071
+zuul.routes.products.path=/api/**
+ 
+4) Create the Filter: ZuulFilter
+Register the Filter
+
+--------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
